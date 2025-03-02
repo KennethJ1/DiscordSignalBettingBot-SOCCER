@@ -35,15 +35,15 @@ public class APIconnect {
         ZonedDateTime todayUtc = ZonedDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT, ZoneOffset.UTC);
         ZonedDateTime futureUtc = ZonedDateTime.of(LocalDate.now().plusDays(10), LocalTime.MIDNIGHT, ZoneOffset.UTC);
         // Format it to "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateTimeFormatter formatter_to_string = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        DateTimeFormatter formatter_from_string = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
         // Convert to string
-        String commenceTimeFrom = todayUtc.format(formatter);
+        String commenceTimeFrom = todayUtc.format(formatter_to_string);
 
-        String commenceTimeTo = futureUtc.format(formatter);
+        String commenceTimeTo = futureUtc.format(formatter_to_string);
 
         for (int i = 0; i < GameKeys.length; i++) {
             sport = GameKeys[i];
-            System.out.println(i);
             String url = String.format(
                     "%s%s/odds?apiKey=%s&regions=%s&markets=%s&dateFormat=%s&oddsFormat=%s&commenceTimeFrom=%s&commenceTimeTo=%s&includeLinks=true",
                     baseUrl, sport, apiKey, regions, market, dateFormat, oddsFormat, commenceTimeFrom, commenceTimeTo
@@ -65,6 +65,7 @@ public class APIconnect {
                         curr_game.game_id  = (String) game.get("id");
                         curr_game.home_team  = (String) game.get("home_team");
                         curr_game.away_team  = (String) game.get("away_team");
+                        curr_game.date_time  = ZonedDateTime.parse((String) game.get("commence_time"),formatter_from_string.withZone(ZoneId.of("UTC")) );
                         curr_games.add(curr_game);
                     }
                     Games.put(sport, curr_games);
@@ -80,13 +81,14 @@ public class APIconnect {
 
 
         }
-        System.out.println(Games);
+        System.out.println(Games.get("soccer_epl").get(0).date_time);
     }
 
     public static class Game{
         String game_id = "";
         String home_team = "";
         String away_team = "";
+        ZonedDateTime date_time;
     }
 }
 //https://api.the-odds-api.com/v4/sports/soccer_epl/events/1ee2fa57e3e5993877afb667347a7d85/odds?apiKey=35c9689d1e67fcad802be426947910c0&regions=us&markets=player_shots_on_target&dateFormat=iso&oddsFormat=decimal
