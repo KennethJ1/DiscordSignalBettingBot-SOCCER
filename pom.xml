@@ -55,7 +55,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>MainApp</mainClass>
+              <mainClass>APIconnect</mainClass>
             </manifest>
           </archive>
         </configuration>
